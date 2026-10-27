@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lynk · Your browsing companion</title>
+    <link rel="stylesheet" href="ui.css" />
+  </head>
+  <body class="popup">
+    <main>
+      <header class="topbar">
+        <a class="wordmark" href="popup.html" aria-label="Lynk home"
+          ><img src="icons/mark.svg" alt="" width="32" height="32" />lynk<span class="wordmark-dot"
+            >.</span
+          ></a
+        ><button id="settings" class="icon-button" aria-label="Open settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path
+              d="m9 3-.7 2.2-2 .9-2.1-.5L2 9l1.5 1.7v2.6L2 15l2.2 3.4 2.1-.5 2 .9L9 21h4l.7-2.2 2-.9 2.1.5L20 15l-1.5-1.7v-2.6L20 9l-2.2-3.4-2.1.5-2-.9L13 3Z"
+            />
+            <circle cx="11" cy="12" r="3" />
+          </svg>
+        </button>
+      </header>
+      <div class="eyebrow status-line">
+        <span id="status-dot" class="status-dot"></span
+        ><span id="status-label">CHECKING PROTECTION</span><span class="local-tag">ON DEVICE</span>
+      </div>
+      <section class="hero" id="hero">
+        <div class="orbital">
+          <span class="orbit orbit-one"></span><span class="orbit orbit-two"></span>
+          <div class="shield">
+            <svg viewBox="0 0 40 44" fill="none">
+              <path
+                d="M20 3 35 9v12c0 10-15 19-15 19S5 31 5 21V9L20 3Z"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="m13 21 5 5 10-11"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <span class="orbit-spark">✦</span>
+        </div>
+        <h1 id="headline">A little peace<br />of mind.</h1>
+        <p id="hero-copy">Checking your current tab…</p>
+      </section>
+      <section class="site-card" aria-label="Current website">
+        <div class="site-icon" id="site-icon">↗</div>
+        <div class="site-info">
+          <span class="caption">CURRENT WEBSITE</span><strong id="current-host">Loading…</strong>
+        </div>
+        <span id="site-pill" class="pill">Checking</span>
+      </section>
+      <div id="findings" class="findings" hidden></div>
+      <nav class="tabbar" aria-label="Views">
+        <button id="tab-overview" class="selected" aria-selected="true">Overview</button
+        ><button id="tab-activity" aria-selected="false">
+          Activity <span id="activity-count">0</span>
+        </button>
+      </nav>
+      <section id="overview">
+        <div class="feature">
+          <span class="feature-icon">↗</span>
+          <div>
+            <strong>Link protection</strong>
+            <p>Known scams & deceptive addresses</p>
+          </div>
+          <span class="feature-state" id="links-state">On</span>
+        </div>
+        <div class="feature">
+          <span class="feature-icon">◇</span>
+          <div>
+            <strong>Wallet awareness</strong>
+            <p>Recovery phrase & private key alerts</p>
+          </div>
+          <span class="feature-state" id="wallet-state">On</span>
+        </div>
+        <div class="feed-note">
+          <span class="mini-dot"></span><span id="feed-note">Loading threat intelligence…</span>
+        </div>
+      </section>
+      <section id="activity" hidden>
+        <div class="section-label">
+          RECENT WARNINGS <button id="clear-activity" class="text-button">Clear</button>
+        </div>
+        <div id="activity-list"></div>
+        <p class="fine-print">Only warning domains are saved on this device. No full URLs.</p>
+      </section>
+      <section class="url-check">
+        <label for="check-url">A link feel off?</label>
+        <form id="check-form">
+          <input
+            id="check-url"
+            type="text"
+            spellcheck="false"
+            autocomplete="off"
+            placeholder="Paste a link to check"
+            maxlength="8192"
+            required
+            aria-label="URL to check"
+          /><button type="submit" class="check-button" aria-label="Check link">↗</button>
+        </form>
+        <div id="check-result" class="check-result" role="status" hidden></div>
+      </section>
+      <p id="error" class="error" role="alert" hidden></p>
+      <footer class="popup-footer">
+        <span><span class="mini-dot"></span> Private by design</span
+        ><span>Stay curious. Browse carefully.</span>
+      </footer>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

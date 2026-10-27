@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Lynk — browse with a little more certainty",
+  "short_name": "Lynk",
+  "description": "Local phishing checks, lookalike URL warnings, and recovery-phrase alerts. A quieter guard for your browser and wallet.",
+  "version": "0.1.0",
+  "minimum_chrome_version": "120",
+  "permissions": ["storage", "webNavigation", "declarativeNetRequest", "alarms"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Lynk · Link protection",
+    "default_icon": { "16": "icons/16.png", "32": "icons/32.png" }
+  },
+  "icons": { "16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png" },
+  "options_page": "settings.html",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [{ "id": "threats", "enabled": true, "path": "data/rules.json" }]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["warning.html", "ui.css", "warning.js", "icons/mark.svg"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'; connect-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
+  }
+}

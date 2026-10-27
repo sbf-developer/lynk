@@ -1,0 +1,42 @@
+// These domains are identity anchors for spelling checks, not safety endorsements.
+export const BRANDS = [
+  { name: 'MetaMask', label: 'metamask', domains: ['metamask.io', 'metamask.com'] },
+  { name: 'Uniswap', label: 'uniswap', domains: ['uniswap.org'] },
+  { name: 'OpenSea', label: 'opensea', domains: ['opensea.io', 'opensea.com'] },
+  { name: 'Coinbase', label: 'coinbase', domains: ['coinbase.com'] },
+  { name: 'Kraken', label: 'kraken', domains: ['kraken.com'] },
+  { name: 'Binance', label: 'binance', domains: ['binance.com', 'binance.us'] },
+  { name: 'Ledger', label: 'ledger', domains: ['ledger.com'] },
+  { name: 'Trezor', label: 'trezor', domains: ['trezor.io'] },
+  { name: 'Phantom', label: 'phantom', domains: ['phantom.app'] },
+  { name: 'Rabby', label: 'rabby', domains: ['rabby.io'] },
+  { name: 'Etherscan', label: 'etherscan', domains: ['etherscan.io'] },
+  { name: 'Revoke.cash', label: 'revoke', domains: ['revoke.cash'] },
+  { name: 'Aave', label: 'aave', domains: ['aave.com'] },
+  { name: 'Jupiter', label: 'jup', domains: ['jup.ag'] },
+  { name: 'Raydium', label: 'raydium', domains: ['raydium.io'] },
+  {
+    name: 'WalletConnect',
+    label: 'walletconnect',
+    domains: ['walletconnect.com', 'walletconnect.org', 'walletconnect.network'],
+  },
+  { name: 'MyEtherWallet', label: 'myetherwallet', domains: ['myetherwallet.com'] },
+  {
+    name: 'Google',
+    label: 'google',
+    domains: ['google.com', 'google.de', 'google.co.uk', 'google.fr'],
+  },
+  {
+    name: 'Microsoft',
+    label: 'microsoft',
+    domains: ['microsoft.com', 'microsoftonline.com', 'live.com', 'office.com'],
+  },
+  { name: 'Apple', label: 'apple', domains: ['apple.com', 'icloud.com'] },
+  { name: 'PayPal', label: 'paypal', domains: ['paypal.com'] },
+  { name: 'GitHub', label: 'github', domains: ['github.com'] },
+  {
+    name: 'Amazon',
+    label: 'amazon',
+    domains: ['amazon.com', 'amazon.de', 'amazon.co.uk', 'amazon.fr'],
+  },
+] as const;

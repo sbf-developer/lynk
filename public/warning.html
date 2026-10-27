@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lynk · Take a step back</title>
+    <link rel="stylesheet" href="ui.css" />
+  </head>
+  <body class="warning-page">
+    <main class="warning-shell">
+      <header class="warning-brand">
+        <a class="wordmark" href="popup.html"
+          ><img src="icons/mark.svg" width="32" height="32" alt="" />lynk<span class="wordmark-dot"
+            >.</span
+          ></a
+        ><span>A MOMENT OF CAUTION</span>
+      </header>
+      <section class="warning-card">
+        <div class="warning-symbol" aria-hidden="true">!</div>
+        <span class="kicker">LET’S TAKE A STEP BACK</span>
+        <h1>This link feels off.</h1>
+        <p class="lede" id="intro">
+          Lynk stopped this navigation because it matched a reported threat or a suspicious address
+          pattern.
+        </p>
+        <div id="blocked-host" class="warning-host">Checking the blocked destination…</div>
+        <div id="warning-detail" class="warning-detail" aria-live="polite"></div>
+        <div class="button-row">
+          <button id="leave" class="primary-button">
+            Leave this page <span aria-hidden="true">↗</span></button
+          ><a id="official" class="secondary-button" hidden>Open reference website ↗</a>
+        </div>
+        <p class="warning-note">
+          Don’t enter a recovery phrase, connect a wallet, or approve a signature on a site you
+          don’t trust.
+        </p>
+      </section>
+      <details id="advanced">
+        <summary>I understand the risk · Advanced options</summary>
+        <div class="override-box">
+          <label
+            ><input type="checkbox" id="accept-risk" /><span
+              >I understand this site may steal funds or credentials. Allow only this origin in this
+              tab for up to 10 minutes. Embedded threats remain blocked.</span
+            ></label
+          ><button id="continue" class="secondary-button" disabled>Continue to this site</button>
+          <p>
+            Permission expires when you leave this origin, close the tab, or after 10 minutes. A
+            temporary override does not make the website safe.
+          </p>
+        </div>
+      </details>
+      <p id="error" class="error" role="alert" hidden></p>
+      <footer class="page-footer">Private checks. Clear reasons. You’re in control.</footer>
+    </main>
+    <script type="module" src="warning.js"></script>
+  </body>
+</html>

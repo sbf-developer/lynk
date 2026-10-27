@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lynk · Settings</title>
+    <link rel="stylesheet" href="ui.css" />
+  </head>
+  <body>
+    <div class="app-layout">
+      <aside class="sidebar">
+        <a class="wordmark" href="popup.html"
+          ><img src="icons/mark.svg" width="32" height="32" alt="" />lynk<span class="wordmark-dot"
+            >.</span
+          ></a
+        ><a href="https://github.com/sbf-developer/lynk" target="_blank" rel="noopener noreferrer"
+          >Source & documentation ↗</a
+        >
+        <div class="sidebar-note">A calmer corner<br />of the internet.</div>
+      </aside>
+      <main class="settings-main">
+        <span class="kicker">MAKE YOURSELF AT HOME</span>
+        <h1>Your guard. Your call.</h1>
+        <p class="lede">
+          A few thoughtful defaults, with you in control.<br />Every check happens right here on
+          your device.
+        </p>
+        <div id="paused" class="paused-note" hidden>
+          Protection is paused. Known phishing sites and suspicious links can load without Lynk
+          warnings.
+        </div>
+        <section class="settings-section">
+          <h2>Protection</h2>
+          <div class="settings-card">
+            <div class="setting-row">
+              <div>
+                <strong>Browser protection</strong>
+                <p>
+                  Block reported phishing domains before they load. Turn this off to pause all
+                  automatic checks.
+                </p>
+              </div>
+              <label class="switch"
+                ><input type="checkbox" id="enabled" aria-label="Browser protection" /><span></span
+              ></label>
+            </div>
+            <div class="setting-row">
+              <div>
+                <strong>Lookalike detection</strong>
+                <p>
+                  Check for misspellings, misleading subdomains, and addresses that imitate familiar
+                  brands.
+                </p>
+              </div>
+              <label class="switch"
+                ><input
+                  type="checkbox"
+                  id="lookalikes"
+                  aria-label="Lookalike detection" /><span></span
+              ></label>
+            </div>
+            <div class="setting-row">
+              <div>
+                <strong>Wallet awareness</strong>
+                <p>
+                  Warn when a page asks for a recovery phrase or private key. Field labels are
+                  checked; your typed secrets are never read.
+                </p>
+              </div>
+              <label class="switch"
+                ><input type="checkbox" id="pageGuard" aria-label="Wallet awareness" /><span></span
+              ></label>
+            </div>
+            <div class="setting-row">
+              <div>
+                <strong>Link previews</strong>
+                <p>
+                  Check hovered links and stop deceptive link text on click. Navigation checks
+                  remain active independently.
+                </p>
+              </div>
+              <label class="switch"
+                ><input type="checkbox" id="linkGuard" aria-label="Link previews" /><span></span
+              ></label>
+            </div>
+          </div>
+        </section>
+        <section class="settings-section">
+          <h2>Your device, your data</h2>
+          <div class="settings-card">
+            <div class="setting-row">
+              <div>
+                <strong>Local warning history</strong>
+                <p>
+                  Remember up to 50 warning domains, reasons, and times. Switching this off also
+                  clears existing history.
+                </p>
+              </div>
+              <label class="switch"
+                ><input
+                  type="checkbox"
+                  id="rememberActivity"
+                  aria-label="Local warning history" /><span></span
+              ></label>
+            </div>
+            <div class="setting-row">
+              <div>
+                <strong>Start fresh</strong>
+                <p>Remove all locally saved warning activity.</p>
+              </div>
+              <button id="clear" class="secondary-button">Clear history</button>
+            </div>
+          </div>
+          <p class="privacy-box">
+            No account. No analytics. No browsing history uploaded.<br />Lynk never connects to your
+            wallet, reads balances, or requests signatures.
+          </p>
+        </section>
+        <section class="settings-section">
+          <h2>Threat intelligence</h2>
+          <div class="settings-card">
+            <div class="data-grid">
+              <div><span>REPORTED DOMAINS</span><strong id="domain-count">Loading…</strong></div>
+              <div><span>SNAPSHOT RETRIEVED</span><strong id="feed-date">Loading…</strong></div>
+              <div><span>PROVIDER</span><strong>MetaMask / eth-phishing-detect</strong></div>
+              <div>
+                <span>NATIVE NETWORK PROTECTION</span><strong id="network-state">Checking…</strong>
+              </div>
+            </div>
+          </div>
+          <p id="freshness" class="fine-print"></p>
+          <p class="fine-print">
+            Threat lists ship with extension releases. Rebuild from a refreshed snapshot or install
+            a newer release to update them. This version does not fetch live reputation data.
+          </p>
+        </section>
+        <section class="settings-section">
+          <h2>A useful layer, with limits</h2>
+          <p class="lede">
+            No flags does not mean a site is safe. Lynk cannot inspect your wallet’s own
+            confirmation screen, simulate transactions, detect every malicious contract, or revoke
+            approvals. A compromised legitimate site may pass URL checks. Keep wallet security
+            alerts enabled and review every signature.
+          </p>
+          <p class="fine-print">
+            Lookalike navigation checks can run after a request starts. Page warnings are best
+            effort; hostile pages can interfere with them. Chrome restricts extensions on internal
+            pages, the Chrome Web Store, and other extensions. Incognito requires separate
+            permission.
+          </p>
+        </section>
+        <p id="error" class="error" role="alert" hidden></p>
+        <footer class="fine-print">Lynk 0.1.0 · Thoughtful protection, quietly.</footer>
+      </main>
+    </div>
+    <div id="saved" class="save-status" role="status" hidden>Changes saved</div>
+    <script type="module" src="settings.js"></script>
+  </body>
+</html>
