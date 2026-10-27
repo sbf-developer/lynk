@@ -149,7 +149,9 @@ export function createEngine(feed: Pick<Feed, 'domains' | 'allowlist'>) {
     if (lookalikes && !findListed(hostname, fuzzyExempt)) {
       for (const brand of BRANDS) {
         if (brand.domains.some((d) => hostMatches(hostname, d))) continue;
-        const embedded = brand.domains.some((d) => hostname.includes(`${d}.`));
+        const embedded = brand.domains.some(
+          (d) => hostname.startsWith(`${d}.`) || hostname.includes(`.${d}.`),
+        );
         const same = label === brand.label;
         const typo =
           brand.label.length >= 5 &&

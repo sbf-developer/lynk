@@ -20,8 +20,9 @@ function renderChoices(choices: ExplanationChoice[]) {
   }
   if (!choices.length) {
     const p = document.createElement('p');
-    p.textContent =
-      'No known URL warning signals were found in this check. That does not verify who operates the website or what a wallet request will do.';
+    p.textContent = evidence?.findings.length
+      ? 'Read the findings above for this check. A simpler explanation is not available for every type of warning.'
+      : 'No known URL warning signals were found in this check. That does not verify who operates the website or what a wallet request will do.';
     list.append(p);
   }
 }

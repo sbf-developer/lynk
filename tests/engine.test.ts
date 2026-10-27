@@ -48,6 +48,8 @@ describe('URL classification', () => {
     'https://example.org',
     'https://github.com/a/metamask',
     'https://docs.google.com',
+    'https://notmetamask.io.example.org',
+    'https://notpaypal.com.example.org',
   ])('avoids warning on reference sites and unrelated URLs: %s', (input) => {
     expect(assess(input).verdict).toBe('clear');
   });

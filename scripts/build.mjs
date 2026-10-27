@@ -1,7 +1,12 @@
 import { build } from 'esbuild';
-import { cp, mkdir, readFile, writeFile, readdir } from 'node:fs/promises';
+import { cp, mkdir, readFile, writeFile, readdir, rm } from 'node:fs/promises';
+import path from 'node:path';
 import sharp from 'sharp';
-await mkdir('dist', { recursive: true });
+const output = path.resolve('dist');
+if (path.dirname(output) !== process.cwd() || path.basename(output) !== 'dist')
+  throw new Error('Build output must stay inside the project.');
+await rm(output, { recursive: true, force: true });
+await mkdir(output, { recursive: true });
 await cp('public', 'dist', { recursive: true });
 await mkdir('dist/licenses', { recursive: true });
 for (const [from, to] of [

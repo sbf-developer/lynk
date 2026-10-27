@@ -15,10 +15,10 @@
           ></a
         ><button id="settings" class="icon-button" aria-label="Open settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path
-              d="m9 3-.7 2.2-2 .9-2.1-.5L2 9l1.5 1.7v2.6L2 15l2.2 3.4 2.1-.5 2 .9L9 21h4l.7-2.2 2-.9 2.1.5L20 15l-1.5-1.7v-2.6L20 9l-2.2-3.4-2.1.5-2-.9L13 3Z"
-            />
-            <circle cx="11" cy="12" r="3" />
+            <path d="M4 6h7m4 0h5M4 12h1m4 0h11M4 18h9m4 0h3" />
+            <circle cx="13" cy="6" r="2" />
+            <circle cx="7" cy="12" r="2" />
+            <circle cx="15" cy="18" r="2" />
           </svg>
         </button>
       </header>
@@ -37,6 +37,7 @@
                 stroke-width="2"
               />
               <path
+                id="status-glyph"
                 d="m13 21 5 5 10-11"
                 stroke="currentColor"
                 stroke-width="2.5"
@@ -45,7 +46,6 @@
               />
             </svg>
           </div>
-          <span class="orbit-spark">✦</span>
         </div>
         <h1 id="headline">A little peace<br />of mind.</h1>
         <p id="hero-copy">Checking your current tab…</p>
@@ -59,14 +59,26 @@
       </section>
       <div id="findings" class="findings" hidden></div>
       <nav class="tabbar" aria-label="Views">
-        <button id="tab-overview" class="selected" aria-selected="true">Overview</button
-        ><button id="tab-activity" aria-selected="false">
+        <button id="tab-overview" class="selected" aria-pressed="true">Overview</button
+        ><button id="tab-activity" aria-pressed="false">
           Activity <span id="activity-count">0</span>
         </button>
       </nav>
       <section id="overview">
         <div class="feature">
-          <span class="feature-icon">↗</span>
+          <span class="feature-icon" aria-hidden="true"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+            >
+              <path
+                d="m10 13 4-4m-6 6-2 2a4 4 0 0 1-6-6l3-3a4 4 0 0 1 6 0m6 1 2-2a4 4 0 0 1 6 6l-3 3a4 4 0 0 1-6 0"
+                transform="translate(1 0)"
+              /></svg
+          ></span>
           <div>
             <strong>Link protection</strong>
             <p>Known scams & deceptive addresses</p>
@@ -74,7 +86,18 @@
           <span class="feature-state" id="links-state">On</span>
         </div>
         <div class="feature">
-          <span class="feature-icon">◇</span>
+          <span class="feature-icon" aria-hidden="true"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 8V6a2 2 0 0 0-2-2H6a3 3 0 0 0 0 6h14v10H6a3 3 0 0 1-3-3V7m17 6h-5v4h5" />
+              <path d="M17 15h.01" /></svg
+          ></span>
           <div>
             <strong>Wallet awareness</strong>
             <p>Recovery phrase & private key alerts</p>
@@ -93,7 +116,7 @@
         <p class="fine-print">Only warning domains are saved on this device. No full URLs.</p>
       </section>
       <section class="url-check">
-        <label for="check-url">A link feel off?</label>
+        <label for="check-url">Check a link</label>
         <form id="check-form">
           <input
             id="check-url"

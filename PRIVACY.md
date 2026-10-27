@@ -1,6 +1,6 @@
 # Lynk privacy
 
-Lynk 0.2.0 processes browsing checks locally. It has no developer-operated server and sends no browsing data, analytics, wallet information, or field values to third parties.
+Lynk 0.2.1 processes browsing checks locally. It has no developer-operated server and sends no browsing data, analytics, wallet information, or field values to third parties.
 
 - **Permanent local data:** settings and, when enabled, up to 50 warning hostnames, reason labels, and timestamps. No paths, queries, or fragments appear in warning history.
 - **Session data:** current per-tab assessment, including the full URL needed to explain and reopen a warning, plus temporary override origin and expiry. Restricted to trusted extension contexts. Cleared on browser-session end; closed tabs and navigation to non-web pages also remove their state. Warning pages retain their blocked destination until you leave them.

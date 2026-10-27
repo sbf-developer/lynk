@@ -126,57 +126,54 @@ function anchor(event: Event): HTMLAnchorElement | undefined {
     | HTMLAnchorElement
     | undefined;
 }
-document.addEventListener(
-  'pointerover',
-  (event) => {
-    const link = anchor(event);
-    if (
-      !link ||
-      !parseWebUrl(link.href) ||
-      linkCache.has(link.href) ||
-      prefs?.enabled === false ||
-      prefs?.linkGuard === false
-    )
-      return;
-    const href = link.href;
-    if (linkCache.size > 100) linkCache.delete(linkCache.keys().next().value!);
-    linkCache.set(href, null);
-    void send<Assessment>({ type: 'CHECK_URL', url: href }).then((result) => {
-      if (!result) return;
-      linkCache.set(href, result);
-      if (result.verdict === 'danger' || result.verdict === 'caution')
-        link.setAttribute(
-          'title',
-          `Lynk: ${result.findings[0]?.title}. Destination: ${result.hostname}`,
-        );
-    });
-  },
-  { passive: true, capture: true },
-);
-document.addEventListener(
-  'click',
-  (event) => {
-    if (prefs?.enabled === false || prefs?.linkGuard === false || !event.isTrusted) return;
-    const link = anchor(event);
-    if (!link || !parseWebUrl(link.href)) return;
-    const mismatch = displayedLinkMismatch(link.textContent ?? '', link.href);
-    const checked = linkCache.get(link.href);
-    if (!mismatch && checked?.verdict !== 'danger') return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    const destination = new URL(link.href);
-    showWarning(
-      mismatch ? 'This link leads somewhere else.' : 'A risky link was stopped.',
-      mismatch
-        ? 'The web address shown in the link does not match its actual destination. Verify the address through a trusted source.'
-        : checked!.findings.map((f) => f.detail).join(' '),
-      destination.hostname,
-      `link:${link.href}`,
-      false,
-    );
-  },
-  true,
-);
+function previewLink(event: Event) {
+  const link = anchor(event);
+  if (
+    !link ||
+    !parseWebUrl(link.href) ||
+    linkCache.has(link.href) ||
+    !prefs?.enabled ||
+    !prefs.linkGuard
+  )
+    return;
+  const href = link.href;
+  if (linkCache.size > 100) linkCache.delete(linkCache.keys().next().value!);
+  linkCache.set(href, null);
+  void send<Assessment>({ type: 'CHECK_URL', url: href }).then((result) => {
+    if (!result) return;
+    linkCache.set(href, result);
+    if (result.verdict === 'danger' || result.verdict === 'caution')
+      link.setAttribute(
+        'title',
+        `Lynk: ${result.findings[0]?.title}. Destination: ${result.hostname}`,
+      );
+  });
+}
+document.addEventListener('pointerover', previewLink, { passive: true, capture: true });
+document.addEventListener('focusin', previewLink, { passive: true, capture: true });
+function guardLink(event: MouseEvent) {
+  if (!prefs?.enabled || !prefs.linkGuard || !event.isTrusted) return;
+  if (event.type === 'auxclick' && event.button !== 1) return;
+  const link = anchor(event);
+  if (!link || !parseWebUrl(link.href)) return;
+  const mismatch = displayedLinkMismatch(link.textContent ?? '', link.href);
+  const checked = linkCache.get(link.href);
+  if (!mismatch && checked?.verdict !== 'danger') return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  const destination = new URL(link.href);
+  showWarning(
+    mismatch ? 'This link leads somewhere else.' : 'A risky link was stopped.',
+    mismatch
+      ? 'The web address shown in the link does not match its actual destination. Verify the address through a trusted source.'
+      : checked!.findings.map((f) => f.detail).join(' '),
+    destination.hostname,
+    `link:${link.href}`,
+    false,
+  );
+}
+document.addEventListener('click', guardLink, true);
+document.addEventListener('auxclick', guardLink, true);
 document.addEventListener(
   'submit',
   (event) => {

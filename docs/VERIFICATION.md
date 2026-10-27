@@ -3,8 +3,8 @@
 Verified locally on 28 October 2026 with Node.js 22.13.1, Windows, and a Playwright Chromium executable. The exact browser version can differ from the browser downloaded in CI.
 
 - Strict TypeScript: passed.
-- Threat-engine and local-AI boundary unit suites: 68 tests passed.
-- Actual MV3 extension browser suite: 11 tests passed.
+- Threat-engine and local-AI boundary unit suites: 70 tests passed.
+- Actual MV3 extension browser suite: 14 tests passed.
 - Production build: 109,938 pinned reported domains, 440 grouped native rules.
 - `npm audit`: zero known vulnerabilities, including development tools, at verification time.
 - Popup, warning page, and settings screenshots inspected visually.
@@ -15,4 +15,8 @@ The AI tests use a controlled API substitute for selection, unavailable devices,
 
 The local v0.2.0 ZIP was approximately 2.70 MB, about 8 kB larger than v0.1.0 in this build, with no new production dependency or permission. These are compressed artifact sizes, not installed memory usage or Chrome model download sizes.
 
-CI repeats type checking, unit tests, the production build, and extension browser tests on Linux, then creates a packaged extension ZIP. Results are available in the repository’s Actions tab. Passing tests demonstrate the tested paths; this is not an independent security audit.
+The final v0.2.1 clean package is approximately 1.51 MB. The size reduction comes from excluding Chrome-generated compiled rule caches found in the earlier local build directory. It still contains all 109,938 source threat domains and 440 rules. Builds now start from a verified project-local output directory, and packaging explicitly excludes Chrome’s reserved `_metadata` directory.
+
+The final v0.2.1 review also verified lookalike checks after server redirects, whole-label hostname comparisons, left/middle-click protection, paused-link behavior, and clearing disabled wallet findings. The interface uses system fonts, a vector logo rendered at every toolbar size, stronger text contrast and distinct paused/risk glyphs. Screenshots of the popup, warning, settings and explanation pages were inspected.
+
+CI repeats formatting, type checking, unit tests, the production build, and extension browser tests on Linux, then creates a packaged extension ZIP. Results are available in the repository’s Actions tab. Passing tests demonstrate the tested paths; this is not an independent security audit.

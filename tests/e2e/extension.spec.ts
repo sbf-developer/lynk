@@ -16,6 +16,11 @@ test.beforeAll(async () => {
   listed = feed.domains.find((d: string) => !d.startsWith('xn--') && d.split('.').length === 2);
   server = createServer((req, res) => {
     requests.push(req.url ?? '');
+    if (req.url === '/redirect-lookalike') {
+      res.writeHead(302, { Location: `http://metamask.io.lynk.test:${port}/redirect-target` });
+      res.end();
+      return;
+    }
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.end(
       `<!doctype html><html><head><title>Local test fixture</title></head><body><h1>Local browser fixture</h1><form><label for="seed">Recovery phrase</label><textarea id="seed" placeholder="Seed phrase"></textarea><button type="submit">Submit</button></form><a id="deceptive" href="http://other.lynk.test:${port}/link">https://metamask.io</a></body></html>`,
@@ -105,6 +110,15 @@ test('detects new lookalikes and shows the real registered domain', async () => 
   await expect(page.locator('#official')).toHaveAttribute('href', 'https://metamask.io/');
   await page.close();
 });
+
+test('rechecks the destination after a server redirect to a new lookalike', async () => {
+  const page = await context.newPage();
+  await page.goto(`http://127.0.0.1:${port}/redirect-lookalike`).catch(() => {});
+  await expect(page).toHaveURL(new RegExp('/warning.html'));
+  await expect(page.locator('#blocked-host')).toHaveText('metamask.io.lynk.test');
+  await expect(page.locator('#warning-detail')).toContainText('Looks similar to MetaMask');
+  await page.close();
+});
 test('popup URL checker, views, and settings work without a network reputation service', async () => {
   const page = await context.newPage();
   await page.goto(`chrome-extension://${extensionId}/popup.html`);
@@ -154,24 +168,52 @@ test('recovery field metadata creates a warning without transmitting typed secre
   const state = await worker.evaluate(() => chrome.storage.session.get(null));
   expect(JSON.stringify(state)).not.toContain('TEST SECRET');
   expect(JSON.stringify(state)).toContain('recovery-phrase');
-  await page.close();
-});
-test('deceptive visible link text is stopped on click', async () => {
+  const tabId = await worker.evaluate(
+    async (url) => (await chrome.tabs.query({})).find((tab) => tab.url === url)?.id,
+    page.url(),
+  );
+  expect(tabId).toBeDefined();
   await uiMessage('UPDATE_SETTINGS', { patch: { pageGuard: false } });
-  const page = await context.newPage();
-  await page.goto(`http://127.0.0.1:${port}/links`);
-  await page.waitForFunction(() => document.readyState === 'complete');
-  // The settings response reaches the content script asynchronously.
   await expect
     .poll(() =>
-      worker.evaluate(async () => JSON.stringify(await chrome.storage.local.get('settings'))),
+      worker.evaluate(
+        async (id) => JSON.stringify((await chrome.storage.session.get(`tab:${id}`))[`tab:${id}`]),
+        tabId!,
+      ),
     )
-    .toContain('"pageGuard":false');
-  await page.locator('#deceptive').click();
-  await expect(page).toHaveURL(`http://127.0.0.1:${port}/links`);
-  await expect(page.locator('[data-lynk-warning]')).toBeVisible();
-  await page.close();
+    .not.toContain('recovery-phrase');
+  await expect(page.locator('[data-lynk-warning]')).toHaveCount(0);
   await uiMessage('UPDATE_SETTINGS', { patch: { pageGuard: true } });
+  await page.close();
+});
+for (const button of ['left', 'middle'] as const)
+  test(`deceptive visible link text is stopped on ${button} click`, async () => {
+    await uiMessage('UPDATE_SETTINGS', { patch: { pageGuard: false } });
+    const page = await context.newPage();
+    await page.goto(`http://127.0.0.1:${port}/links`);
+    await page.waitForFunction(() => document.readyState === 'complete');
+    // The settings response reaches the content script asynchronously.
+    await expect
+      .poll(() =>
+        worker.evaluate(async () => JSON.stringify(await chrome.storage.local.get('settings'))),
+      )
+      .toContain('"pageGuard":false');
+    await page.locator('#deceptive').click({ button });
+    await expect(page).toHaveURL(`http://127.0.0.1:${port}/links`);
+    await expect(page.locator('[data-lynk-warning]')).toBeVisible();
+    await page.close();
+    await uiMessage('UPDATE_SETTINGS', { patch: { pageGuard: true } });
+  });
+
+test('paused protection does not intercept page links', async () => {
+  await uiMessage('UPDATE_SETTINGS', { patch: { enabled: false } });
+  const page = await context.newPage();
+  await page.goto(`http://127.0.0.1:${port}/paused-links`);
+  await page.locator('#deceptive').click();
+  await expect(page).toHaveURL(`http://other.lynk.test:${port}/link`);
+  await expect(page.locator('[data-lynk-warning]')).toHaveCount(0);
+  await page.close();
+  await uiMessage('UPDATE_SETTINGS', { patch: { enabled: true } });
 });
 test('page content cannot invoke privileged settings changes', async () => {
   // Chrome's actual external boundary: pages do not receive chrome.runtime.sendMessage.

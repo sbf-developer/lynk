@@ -4,6 +4,18 @@ import type { Assessment, Snapshot } from '../core/types';
 function renderAssessment(assessment: Assessment | undefined, active: boolean) {
   const verdict = assessment?.verdict;
   const risk = verdict === 'danger' || verdict === 'caution';
+  document
+    .querySelector('#status-glyph')
+    ?.setAttribute(
+      'd',
+      !active
+        ? 'M16 16v12m8-12v12'
+        : risk
+          ? 'M20 14v9m0 5h.01'
+          : verdict === 'clear'
+            ? 'm13 21 5 5 10-11'
+            : '',
+    );
   el('hero').dataset.tone = !active ? 'paused' : risk ? verdict : 'clear';
   text(
     'status-label',
@@ -111,7 +123,7 @@ for (const selected of ['overview', 'activity'])
     for (const name of ['overview', 'activity']) {
       el(name).hidden = name !== selected;
       el(`tab-${name}`).classList.toggle('selected', name === selected);
-      el(`tab-${name}`).setAttribute('aria-selected', String(name === selected));
+      el(`tab-${name}`).setAttribute('aria-pressed', String(name === selected));
     }
   });
 el('clear-activity').addEventListener('click', () => {

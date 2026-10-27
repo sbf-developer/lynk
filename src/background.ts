@@ -137,27 +137,28 @@ async function navigate(tabId: number, raw: string) {
     await chrome.tabs.update(tabId, { url: chrome.runtime.getURL('warning.html') });
   }
 }
-chrome.webNavigation.onBeforeNavigate.addListener((details) => {
-  if (
-    details.frameId !== 0 ||
-    details.url.split(/[?#]/)[0] === chrome.runtime.getURL('warning.html')
-  )
-    return;
-  destinations.set(details.tabId, details.url);
-  const previous = navigating.get(details.tabId) ?? Promise.resolve();
-  const operation = previous.catch(() => {}).then(() => navigate(details.tabId, details.url));
-  navigating.set(details.tabId, operation);
+function scheduleNavigation(tabId: number, url: string) {
+  if (url.split(/[?#]/)[0] === chrome.runtime.getURL('warning.html')) return;
+  destinations.set(tabId, url);
+  const previous = navigating.get(tabId) ?? Promise.resolve();
+  const operation = previous.catch(() => {}).then(() => navigate(tabId, url));
+  navigating.set(tabId, operation);
   void operation
     .catch(() => {})
     .finally(() => {
-      if (navigating.get(details.tabId) === operation) navigating.delete(details.tabId);
+      if (navigating.get(tabId) === operation) navigating.delete(tabId);
     });
+}
+chrome.webNavigation.onBeforeNavigate.addListener((details) => {
+  if (details.frameId === 0) scheduleNavigation(details.tabId, details.url);
+});
+// A server redirect can commit a different host without another onBeforeNavigate event.
+chrome.webNavigation.onCommitted.addListener((details) => {
+  if (details.frameId === 0 && destinations.get(details.tabId) !== details.url)
+    scheduleNavigation(details.tabId, details.url);
 });
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-  if (details.frameId === 0) {
-    destinations.set(details.tabId, details.url);
-    void navigate(details.tabId, details.url).catch(() => {});
-  }
+  if (details.frameId === 0) scheduleNavigation(details.tabId, details.url);
 });
 chrome.tabs.onRemoved.addListener((tabId) => {
   destinations.delete(tabId);
@@ -366,11 +367,23 @@ async function handle(message: unknown, sender: chrome.runtime.MessageSender): P
         });
         await chrome.storage.local.set({ settings: next });
         if (!next.rememberActivity) await chrome.storage.local.remove('activity');
-        for (const tab of await chrome.tabs.query({}))
-          if (tab.id !== undefined)
-            await badge(tab.id, (await getState(tab.id))?.assessment, !next.enabled).catch(
-              () => {},
+        for (const tab of await chrome.tabs.query({})) {
+          if (tab.id === undefined) continue;
+          const state = await getState(tab.id);
+          let current = state?.assessment;
+          if (state) {
+            current = mergeFindings(
+              assess(state.assessment.url, next.lookalikes),
+              next.pageGuard
+                ? state.assessment.findings.filter((f) => f.code === 'recovery-phrase')
+                : [],
             );
+            await chrome.storage.session.set({
+              [stateKey(tab.id)]: { ...state, assessment: current },
+            });
+          }
+          await badge(tab.id, current, !next.enabled).catch(() => {});
+        }
         for (const tab of await chrome.tabs.query({}))
           if (tab.id !== undefined)
             void chrome.tabs.sendMessage(tab.id, { type: 'RESCAN' }).catch(() => {});

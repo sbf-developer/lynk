@@ -27,6 +27,12 @@ async function load() {
     return;
   }
   const { assessment } = state;
+  text(
+    'warning-headline',
+    assessment.findings.some((f) => f.code === 'blocklist')
+      ? 'This site was reported.'
+      : 'Check this address.',
+  );
   el<HTMLButtonElement>('explain').disabled = false;
   text('blocked-host', assessment.hostname);
   const list = el('warning-detail');

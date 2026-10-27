@@ -3,7 +3,7 @@
   "name": "Lynk — browse with a little more certainty",
   "short_name": "Lynk",
   "description": "Local phishing checks, lookalike URL warnings, and recovery-phrase alerts. A quieter guard for your browser and wallet.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "minimum_chrome_version": "120",
   "permissions": ["storage", "webNavigation", "declarativeNetRequest", "alarms"],
   "host_permissions": ["http://*/*", "https://*/*"],

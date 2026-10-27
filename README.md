@@ -20,7 +20,7 @@ npm run build
 3. Choose **Load unpacked** and select this repository’s `dist` folder.
 4. Pin Lynk using Chrome’s extensions menu.
 
-To create a distributable zip, run `npm run package`. Extract `artifacts/lynk-0.2.0.zip` into a folder and load that folder as an unpacked extension. Chrome does not install a local zip directly. This project has not been submitted to the Chrome Web Store.
+To create a distributable zip, run `npm run package`. Extract `artifacts/lynk-0.2.1.zip` into a folder and load that folder as an unpacked extension. Chrome does not install a local zip directly. This project has not been submitted to the Chrome Web Store.
 
 ## What it does
 
