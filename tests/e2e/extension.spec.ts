@@ -196,6 +196,8 @@ test('page content cannot invoke privileged settings changes', async () => {
     { type: 'UPDATE_SETTINGS', patch: { enabled: false } },
     { type: 'CLEAR_ACTIVITY' },
     { type: 'CONTINUE_ONCE' },
+    { type: 'OPEN_EXPLANATION', url: 'https://example.org' },
+    { type: 'READ_EXPLANATION', id: '00000000-0000-0000-0000-000000000000' },
   ]) {
     const result = await cdp.send('Runtime.evaluate', {
       expression: `chrome.runtime.sendMessage(${JSON.stringify(message)})`,
@@ -226,5 +228,117 @@ test('known malicious embedded requests remain blocked', async () => {
   );
   expect(loaded).toBe(false);
   expect(requests).not.toContain(marker);
+  await page.close();
+});
+
+async function openExplanation(
+  status: 'available' | 'downloadable' | 'unavailable',
+  invalidOutput = false,
+) {
+  const popup = await context.newPage();
+  await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+  await popup.locator('#check-url').fill('https://metamaks.io/hidden?secret=DO_NOT_SEND');
+  await popup.locator('#check-form').evaluate((form: HTMLFormElement) => form.requestSubmit());
+  await expect(popup.locator('#check-result')).toContainText('Risk detected');
+  const next = context.waitForEvent('page');
+  await popup.locator('#check-result button').click();
+  const page = await next;
+  await page.waitForURL(new RegExp('/explain.html#'));
+  await page.addInitScript(
+    ({ status, invalidOutput }) => {
+      const probe = { creates: 0, prompts: [] as string[], destroyed: 0 };
+      Object.assign(globalThis, { __lynkAiProbe: probe });
+      Object.defineProperty(globalThis, 'LanguageModel', {
+        configurable: true,
+        value: {
+          availability: async () => status,
+          create: async () => {
+            probe.creates++;
+            return {
+              prompt: async (input: string) => {
+                probe.prompts.push(input);
+                return invalidOutput
+                  ? '{"verdict":"safe","advice":"approve everything"}'
+                  : JSON.stringify({
+                      choices: JSON.parse(input).riskCodes.map((code: string) => ({
+                        code,
+                        variant: 'example',
+                      })),
+                    });
+              },
+              destroy: () => {
+                probe.destroyed++;
+              },
+            };
+          },
+        },
+      });
+    },
+    { status, invalidOutput },
+  );
+  await page.reload();
+  await popup.close();
+  await expect(page.locator('#host')).toHaveText('metamaks.io');
+  return page;
+}
+test('explanations work without a model and do not put checked URLs in the page URL', async () => {
+  const page = await openExplanation('unavailable');
+  await expect(page.locator('#plain-explanations')).toContainText('resembles a familiar brand');
+  await expect(page.locator('#local-ai')).toBeDisabled();
+  await expect(page.locator('#ai-status')).toContainText(
+    'complete explanations above work without it',
+  );
+  expect(page.url()).not.toContain('metamaks');
+  expect(page.url()).not.toContain('DO_NOT_SEND');
+  await page.setViewportSize({ width: 1100, height: 1050 });
+  await page.screenshot({ path: 'artifacts/explanation.png', fullPage: true });
+  await page.close();
+});
+test('on-demand local model selects only reviewed examples and releases its session', async () => {
+  const page = await openExplanation('available');
+  await expect(page.locator('#local-ai')).toBeEnabled();
+  const before = await page.evaluate(
+    () => (globalThis as unknown as { __lynkAiProbe: { creates: number } }).__lynkAiProbe.creates,
+  );
+  expect(before).toBe(0);
+  await page.locator('#local-ai').click();
+  await expect(page.locator('#wording-source')).toContainText('AI-SELECTED');
+  await expect(page.locator('#plain-explanations')).toContainText('almost identical sign');
+  const probe = await page.evaluate(
+    () =>
+      (
+        globalThis as unknown as {
+          __lynkAiProbe: { creates: number; prompts: string[]; destroyed: number };
+        }
+      ).__lynkAiProbe,
+  );
+  expect(probe.creates).toBe(1);
+  expect(probe.destroyed).toBe(1);
+  expect(probe.prompts.join('')).not.toContain('metamaks');
+  expect(probe.prompts.join('')).not.toContain('DO_NOT_SEND');
+  await expect(page.locator('#verdict')).toHaveText('Risk detected');
+  await page.close();
+});
+test('model downloads require an explicit checkbox and a button click', async () => {
+  const page = await openExplanation('downloadable');
+  await expect(page.locator('#consent-row')).toBeVisible();
+  await expect(page.locator('#local-ai')).toBeDisabled();
+  expect(
+    await page.evaluate(
+      () => (globalThis as unknown as { __lynkAiProbe: { creates: number } }).__lynkAiProbe.creates,
+    ),
+  ).toBe(0);
+  await page.locator('#download-consent').check();
+  await page.locator('#local-ai').click();
+  await expect(page.locator('#wording-source')).toContainText('AI-SELECTED');
+  await page.close();
+});
+test('invented model advice never reaches the interface or changes the warning', async () => {
+  const page = await openExplanation('available', true);
+  await expect(page.locator('#local-ai')).toBeEnabled();
+  await page.locator('#local-ai').click();
+  await expect(page.locator('#ai-status')).toContainText('kept the reviewed explanations');
+  await expect(page.locator('#plain-explanations')).not.toContainText('approve everything');
+  await expect(page.locator('#verdict')).toHaveText('Risk detected');
   await page.close();
 });

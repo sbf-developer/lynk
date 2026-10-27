@@ -1,6 +1,6 @@
 # Research and threat model
 
-Researched 27–28 October 2026. Primary sources informed the choices below. This document describes the implementation’s actual boundaries, not a guarantee of protection.
+Researched 27–28 October 2026. Primary sources informed the choices below. This document describes the implementation’s actual boundaries, not a guarantee of protection. The subsequent [local-AI research](LOCAL_AI_RESEARCH.md) covers the optional v0.2.0 explanation-selection feature.
 
 ## How phishing becomes a wallet drain
 
@@ -34,7 +34,7 @@ Lynk therefore does not claim transaction or signature interception. Transaction
 | Web page → warning page  | No continuation URL is accepted from a URL parameter or fragment. `frame-ancestors 'none'` prevents embedding the warning UI for clickjacking.                                                       |
 | Worker → storage         | Local and session storage are restricted to trusted extension contexts. Ordinary page messages cannot toggle settings, erase history, or grant passes.                                               |
 | Third-party feed → build | HTTPS fetch from an immutable revision, bounded domain count, hostname normalization, checksum, upstream license, committed snapshot for review. No downloaded executable code.                      |
-| Runtime → network        | Local packaged JSON only. Native rules contain domain matches, not reputation-service URL uploads.                                                                                                   |
+| Runtime → network        | Extension fetches use local packaged JSON only. Optional built-in AI may cause Chrome to download its browser-managed model. Native rules do not upload URLs to a reputation service.                |
 
 Sources: [Chrome content-script isolation](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts), [Chrome extension security guidance](https://developer.chrome.com/docs/extensions/develop/security-privacy/stay-secure).
 

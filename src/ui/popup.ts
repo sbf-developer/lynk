@@ -54,6 +54,15 @@ function renderAssessment(assessment: Assessment | undefined, active: boolean) {
     p.append(strong, document.createElement('br'), document.createTextNode(finding.detail));
     findings.append(p);
   }
+  if (risk && assessment) {
+    const button = document.createElement('button');
+    button.className = 'text-button';
+    button.textContent = 'Explain this warning ↗';
+    button.addEventListener('click', () => {
+      void request('OPEN_EXPLANATION', { url: assessment.url }).catch(showError);
+    });
+    findings.append(button);
+  }
 }
 async function load() {
   const data = await request<Snapshot>('SNAPSHOT');
@@ -133,6 +142,15 @@ el('check-form').addEventListener('submit', (event) => {
           ? 'This check cannot verify a site’s content, contracts, or signature requests.'
           : 'Other address types cannot be scanned.');
       result.replaceChildren(heading, copy);
+      if (assessment.verdict !== 'unsupported') {
+        const button = document.createElement('button');
+        button.className = 'text-button';
+        button.textContent = 'Help me understand ↗';
+        button.addEventListener('click', () => {
+          void request('OPEN_EXPLANATION', { url: assessment.url }).catch(showError);
+        });
+        result.append(button);
+      }
     })
     .catch(showError);
 });

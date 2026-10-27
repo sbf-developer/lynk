@@ -955,3 +955,117 @@ input::placeholder {
   margin-top: 3px;
   color: #737d6b;
 }
+.explain-link {
+  margin-top: 18px;
+  padding-left: 0;
+}
+.explanation-page {
+  min-height: 100vh;
+  padding: 38px 24px;
+}
+.explanation-shell {
+  max-width: 700px;
+  margin: auto;
+}
+.explanation-intro {
+  padding: 50px 0 26px;
+}
+.explanation-intro h1 {
+  font: 400 46px/1.08 var(--display);
+  letter-spacing: -1.7px;
+  margin: 16px 0;
+}
+.explanation-intro .site-card {
+  margin-top: 25px;
+}
+.explanation-section {
+  margin: 22px 0;
+}
+.explanation-section h2,
+.ai-panel h2 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 15px;
+}
+.explanation-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+.explanation-evidence {
+  color: #71806a;
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.explanation-evidence strong {
+  color: var(--ink);
+  font-weight: 550;
+}
+.plain-explanations {
+  background: #fffefa;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 6px 23px;
+}
+.plain-explanations p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #53654a;
+}
+.next-step {
+  padding: 20px 23px;
+  border-left: 2px solid #b4d891;
+  background: #eef4e6;
+  border-radius: 0 10px 10px 0;
+  margin: 28px 0;
+}
+.next-step p {
+  font-size: 13px;
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+.ai-panel {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 23px;
+  margin-top: 35px;
+}
+.ai-panel p,
+.ai-panel details {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #74816a;
+}
+.ai-panel .button-row {
+  margin-top: 15px;
+}
+.ai-panel .fine-print {
+  font-size: 10px;
+}
+.ai-panel summary {
+  cursor: pointer;
+}
+.ai-consent {
+  display: flex;
+  gap: 10px;
+  align-items: start;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #6f7c64;
+}
+.ai-consent input {
+  margin-top: 5px;
+  accent-color: #7e9f62;
+}
+@media (max-width: 600px) {
+  .explanation-intro h1 {
+    font-size: 37px;
+  }
+  .explanation-section-header {
+    align-items: start;
+    flex-direction: column;
+    gap: 0;
+  }
+}

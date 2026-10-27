@@ -135,6 +135,24 @@
           </p>
         </section>
         <section class="settings-section">
+          <h2>Optional local AI</h2>
+          <p class="lede">
+            On supported devices, Chrome’s built-in model can select everyday examples from Lynk’s
+            reviewed explanations. No extra app, API key, or AI library is needed. It runs only when
+            you ask and cannot change a warning.
+          </p>
+          <button id="check-ai" class="secondary-button">Check this device</button>
+          <p id="device-ai-status" class="fine-print" role="status">
+            Checking support does not download a model. Open “Help me understand” on a checked link
+            for explanations.
+          </p>
+          <p class="fine-print">
+            Chrome currently requires 22 GB of free disk space plus eligible hardware. Model files
+            may be large and are managed by Chrome. Only fixed risk-code names reach the model; no
+            website text or full URLs. Availability varies by browser, device, and policy.
+          </p>
+        </section>
+        <section class="settings-section">
           <h2>A useful layer, with limits</h2>
           <p class="lede">
             No flags does not mean a site is safe. Lynk cannot inspect your wallet’s own
@@ -150,7 +168,7 @@
           </p>
         </section>
         <p id="error" class="error" role="alert" hidden></p>
-        <footer class="fine-print">Lynk 0.1.0 · Thoughtful protection, quietly.</footer>
+        <footer class="fine-print">Lynk 0.2.0 · Thoughtful protection, quietly.</footer>
       </main>
     </div>
     <div id="saved" class="save-status" role="status" hidden>Changes saved</div>

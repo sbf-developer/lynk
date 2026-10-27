@@ -1,6 +1,9 @@
 import { request, el, text, showError } from './shared';
 import type { TabState } from '../core/types';
 el('leave').addEventListener('click', () => location.replace('about:blank'));
+el('explain').addEventListener('click', () => {
+  void request('OPEN_EXPLANATION').catch(showError);
+});
 el('accept-risk').addEventListener('change', () => {
   el<HTMLButtonElement>('continue').disabled = !el<HTMLInputElement>('accept-risk').checked;
 });
@@ -24,6 +27,7 @@ async function load() {
     return;
   }
   const { assessment } = state;
+  el<HTMLButtonElement>('explain').disabled = false;
   text('blocked-host', assessment.hostname);
   const list = el('warning-detail');
   for (const finding of assessment.findings) {

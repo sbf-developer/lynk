@@ -10,5 +10,6 @@ async function walk(dir, prefix = '') {
 }
 await walk('dist');
 await mkdir('artifacts', { recursive: true });
-await writeFile('artifacts/lynk-0.1.0.zip', zipSync(files));
-console.log('Packaged artifacts/lynk-0.1.0.zip');
+const { version } = JSON.parse(await readFile('package.json', 'utf8'));
+await writeFile(`artifacts/lynk-${version}.zip`, zipSync(files));
+console.log(`Packaged artifacts/lynk-${version}.zip`);

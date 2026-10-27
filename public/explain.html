@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lynk · Understand this check</title>
+    <link rel="stylesheet" href="ui.css" />
+  </head>
+  <body class="explanation-page">
+    <main class="explanation-shell">
+      <header class="topbar">
+        <a class="wordmark" href="popup.html"
+          ><img src="icons/mark.svg" width="32" height="32" alt="" />lynk<span class="wordmark-dot"
+            >.</span
+          ></a
+        ><span class="kicker">A LITTLE CLARITY</span>
+      </header>
+      <section class="explanation-intro">
+        <span class="kicker">UNDERSTAND THE WARNING</span>
+        <h1>A clear reason.<br />A careful next step.</h1>
+        <p class="lede">Here’s what Lynk found, in everyday language.</p>
+        <div class="site-card">
+          <div class="site-icon">↗</div>
+          <div class="site-info">
+            <span class="caption">CHECKED WEBSITE</span><strong id="host">Loading…</strong>
+          </div>
+          <span class="pill" id="verdict">Checking</span>
+        </div>
+      </section>
+      <section class="explanation-section">
+        <h2>What triggered the warning</h2>
+        <div id="evidence" class="explanation-evidence"></div>
+      </section>
+      <section class="explanation-section">
+        <div class="explanation-section-header">
+          <h2>In simple words</h2>
+          <span class="caption" id="wording-source">REVIEWED EXPLANATIONS</span>
+        </div>
+        <div id="plain-explanations" class="plain-explanations" aria-live="polite"></div>
+      </section>
+      <section class="next-step">
+        <span class="caption">A CAREFUL NEXT STEP</span>
+        <p id="next-step">Loading the check…</p>
+      </section>
+      <section class="ai-panel" aria-labelledby="ai-heading">
+        <div class="explanation-section-header">
+          <h2 id="ai-heading">Optional on-device AI</h2>
+          <span class="pill">PREVIEW</span>
+        </div>
+        <p>
+          Chrome’s local model can choose helpful examples from Lynk’s reviewed explanations. It
+          cannot change a warning, declare a site safe, or invent advice.
+        </p>
+        <p id="ai-status" role="status">
+          Checking whether this browser supports local AI. No model is downloaded by this check.
+        </p>
+        <label class="ai-consent" id="consent-row" hidden
+          ><input type="checkbox" id="download-consent" /><span
+            >Allow Chrome to download its shared on-device model. The download may be large and uses
+            disk space. Nothing is sent to an AI chat service.</span
+          ></label
+        >
+        <div class="button-row">
+          <button id="local-ai" class="secondary-button" disabled>Checking support…</button
+          ><button id="cancel-ai" class="text-button" hidden>Cancel</button>
+        </div>
+        <p class="fine-print">
+          Only the type of warning reaches the model. Your website address, page text, wallet data,
+          and typed secrets stay out of AI prompts. Chrome manages model storage.
+        </p>
+        <details>
+          <summary>Why optional?</summary>
+          <p>
+            Current Chrome requirements include 22 GB free disk space and eligible CPU/RAM or GPU
+            hardware. The model itself is smaller, but not every device qualifies. Model downloads
+            and storage are managed by Chrome. Lynk works without AI, with no extra app or API key.
+          </p>
+          <a
+            href="https://developer.chrome.com/docs/ai/get-started"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Chrome’s current requirements ↗</a
+          >
+        </details>
+      </section>
+      <p id="error" class="error" role="alert" hidden></p>
+      <footer class="page-footer">
+        Based on this URL check. Review every wallet request separately.
+      </footer>
+    </main>
+    <script type="module" src="explain.js"></script>
+  </body>
+</html>

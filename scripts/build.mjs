@@ -13,7 +13,13 @@ for (const [from, to] of [
 ])
   await cp(from, `dist/licenses/${to}`);
 await build({
-  entryPoints: ['src/background.ts', 'src/ui/popup.ts', 'src/ui/settings.ts', 'src/ui/warning.ts'],
+  entryPoints: [
+    'src/background.ts',
+    'src/ui/popup.ts',
+    'src/ui/settings.ts',
+    'src/ui/warning.ts',
+    'src/ui/explain.ts',
+  ],
   bundle: true,
   outdir: 'dist',
   entryNames: '[name]',

@@ -1,5 +1,6 @@
 import { request, el, text, showError, feedAge } from './shared';
 import { DEFAULT_SETTINGS, type Settings, type Snapshot } from '../core/types';
+import { modelAvailability } from '../core/local-ai';
 let savedTimer: ReturnType<typeof setTimeout>;
 function saved() {
   el('saved').hidden = false;
@@ -53,5 +54,23 @@ for (const key of Object.keys(DEFAULT_SETTINGS)) {
 }
 el('clear').addEventListener('click', () => {
   void request('CLEAR_ACTIVITY').then(saved).catch(showError);
+});
+el('check-ai').addEventListener('click', () => {
+  el<HTMLButtonElement>('check-ai').disabled = true;
+  text('device-ai-status', 'Checking support without starting a download…');
+  void modelAvailability()
+    .then((status) => {
+      text(
+        'device-ai-status',
+        status === 'available'
+          ? 'Ready: Chrome’s local model is available. Open “Help me understand” on a checked link to use it.'
+          : status === 'unavailable'
+            ? 'Unavailable in this browser or on this device. All protection and reviewed explanations still work.'
+            : 'Supported, but Chrome needs to prepare or download its model. Nothing is downloaded from this settings check.',
+      );
+    })
+    .finally(() => {
+      el<HTMLButtonElement>('check-ai').disabled = false;
+    });
 });
 void load().catch(showError);

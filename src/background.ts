@@ -1,4 +1,5 @@
 import { createEngine, mergeFindings, pageFindings, parseWebUrl } from './core/engine';
+import { evidenceFrom, type ExplanationEvidence } from './core/explanations';
 import {
   DEFAULT_SETTINGS,
   type Activity,
@@ -180,13 +181,15 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: [pass.ruleId] });
         await chrome.storage.session.remove(key);
       }
+      if (key.startsWith('explain:') && pass.expires <= Date.now())
+        await chrome.storage.session.remove(key);
     }
   }).catch(() => {});
 });
 
 function trustedUi(sender: chrome.runtime.MessageSender): boolean {
   if (sender.id !== chrome.runtime.id || !sender.url) return false;
-  return ['popup.html', 'settings.html', 'warning.html'].some(
+  return ['popup.html', 'settings.html', 'warning.html', 'explain.html'].some(
     (page) => sender.url?.split(/[?#]/)[0] === chrome.runtime.getURL(page),
   );
 }
@@ -215,6 +218,51 @@ async function handle(message: unknown, sender: chrome.runtime.MessageSender): P
   const prefs = await settings();
   const ui = trustedUi(sender);
   switch (msg.type) {
+    case 'OPEN_EXPLANATION': {
+      if (!ui) throw new Error('Extension page required.');
+      let assessment: Assessment | undefined;
+      if (typeof msg.url === 'string' && msg.url.length <= 8192)
+        assessment = assess(msg.url, prefs.lookalikes, true);
+      else if (warningUi(sender)) {
+        await navigating.get(sender.tab!.id!);
+        assessment = (await getState(sender.tab!.id!))?.assessment;
+      }
+      if (!assessment || assessment.verdict === 'unsupported')
+        throw new Error('Check a web address first.');
+      const all = await chrome.storage.session.get(null);
+      const entries = Object.entries(all).filter(([key]) => key.startsWith('explain:'));
+      const stale = entries
+        .filter(([, value]) => (value as { expires: number }).expires <= Date.now())
+        .map(([key]) => key);
+      const remaining = entries.filter(([key]) => !stale.includes(key));
+      if (remaining.length >= 10)
+        stale.push(...remaining.slice(0, remaining.length - 9).map(([key]) => key));
+      if (stale.length) await chrome.storage.session.remove(stale);
+      const id = crypto.randomUUID();
+      await chrome.storage.session.set({
+        [`explain:${id}`]: { evidence: evidenceFrom(assessment), expires: Date.now() + 15 * 60000 },
+      });
+      await chrome.tabs.create({ url: chrome.runtime.getURL(`explain.html#${id}`) });
+      return true;
+    }
+    case 'READ_EXPLANATION': {
+      if (
+        !ui ||
+        sender.url?.split(/[?#]/)[0] !== chrome.runtime.getURL('explain.html') ||
+        typeof msg.id !== 'string' ||
+        !/^[a-f0-9-]{36}$/.test(msg.id)
+      )
+        throw new Error('Explanation page required.');
+      const key = `explain:${msg.id}`;
+      const entry = (await chrome.storage.session.get(key))[key] as
+        | { evidence: ExplanationEvidence; expires: number }
+        | undefined;
+      if (!entry || entry.expires <= Date.now()) {
+        await chrome.storage.session.remove(key);
+        throw new Error('This explanation has expired. Check the link again from Lynk’s toolbar.');
+      }
+      return entry.evidence;
+    }
     case 'CHECK_URL': {
       if (typeof msg.url !== 'string' || msg.url.length > 8192) throw new Error('Invalid URL.');
       if (!ui && !parseWebUrl(sender.url ?? '')) throw new Error('Unsupported sender.');

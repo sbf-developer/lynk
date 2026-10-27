@@ -1,11 +1,13 @@
 # Lynk privacy
 
-Lynk 0.1.0 processes browsing checks locally. It has no developer-operated server and sends no browsing data, analytics, wallet information, or field values to third parties.
+Lynk 0.2.0 processes browsing checks locally. It has no developer-operated server and sends no browsing data, analytics, wallet information, or field values to third parties.
 
 - **Permanent local data:** settings and, when enabled, up to 50 warning hostnames, reason labels, and timestamps. No paths, queries, or fragments appear in warning history.
 - **Session data:** current per-tab assessment, including the full URL needed to explain and reopen a warning, plus temporary override origin and expiry. Restricted to trusted extension contexts. Cleared on browser-session end; closed tabs and navigation to non-web pages also remove their state. Warning pages retain their blocked destination until you leave them.
 - **Page inspection:** input/textarea labels, IDs, names, placeholders and ARIA labels; anchor destinations and visible link text. Typed field values are never accessed by Lynk. No wallet provider is hooked or queried.
-- **Network activity:** the running extension fetches its own packaged files only. Feed refresh is a developer build task that contacts GitHub. Clicking external documentation/reference links opens those websites normally, under their privacy policies.
+- **Explanation records:** up to ten records in trusted session storage, containing the checked hostname, registered domain, and existing findings. No full URL, path, query, or fragment is retained in these records. They expire after 15 minutes; routine cleanup, opening another explanation, or browser-session end removes them. Alarm scheduling can delay cleanup. These records may briefly remain after closing their explanation tab.
+- **Optional local AI:** an explicit button invokes Chrome’s built-in model, which may require a browser-managed download. Download consent is required when Chrome reports that preparation/download is needed. Only extension-owned risk-code names enter the model. No hostname, full URL, website text, wallet information, or field values enter prompts. Model responses are not stored. Model files and shared-model caching are controlled by Chrome, independently of Lynk’s session cleanup. Removing Lynk does not necessarily remove Chrome’s shared model.
+- **Network activity:** extension code fetches its own packaged files only. Chrome may contact its model distribution service after you request local AI. There is no hosted inference API, cloud fallback, or automatic background model usage. Feed refresh is a developer build task that contacts GitHub. Clicking external documentation/reference links opens those websites normally, under their privacy policies.
 
 Clear warning history in settings. Turning history off also deletes existing entries. Uninstalling removes Chrome-managed extension storage. Browser protection can be paused; this does not delete preferences. No data is synced to a developer service. Your browser may manage its own browsing history independently of this extension.
 

@@ -20,7 +20,7 @@ npm run build
 3. Choose **Load unpacked** and select this repository’s `dist` folder.
 4. Pin Lynk using Chrome’s extensions menu.
 
-To create a distributable zip, run `npm run package`. Extract `artifacts/lynk-0.1.0.zip` into a folder and load that folder as an unpacked extension. Chrome does not install a local zip directly. This project has not been submitted to the Chrome Web Store.
+To create a distributable zip, run `npm run package`. Extract `artifacts/lynk-0.2.0.zip` into a folder and load that folder as an unpacked extension. Chrome does not install a local zip directly. This project has not been submitted to the Chrome Web Store.
 
 ## What it does
 
@@ -38,6 +38,18 @@ The bundled snapshot contains **109,938 domains** from [MetaMask’s eth-phishin
 
 ## Honest limits
 
+### Optional local AI, with a narrow job
+
+Use **Help me understand** on a checked link or warning to open a plain-language explanation. This works on every supported browser without AI. On eligible Chrome installations, an optional button uses Chrome’s built-in pretrained model to select helpful examples from Lynk’s reviewed explanation catalog. No extra AI library or model weights are bundled with the extension.
+
+The model receives **only fixed risk-code names**. A structured response must select a reviewed variant for every existing finding. Unknown codes, free-form advice, missing findings, malformed output, refusals, cancellation, and timeouts fall back to the ordinary explanations. No raw model text is displayed. It cannot change verdicts, flag an otherwise clear URL, alter block rules, or grant a bypass.
+
+AI starts only after a button click. A model download additionally requires a consent checkbox. Browser support varies; Chrome manages its shared model files and may download a large model. Lynk releases its inference session after use; Chrome controls shared-model caching and residency. There is no cloud fallback. Settings includes a support check that never starts a download.
+
+This is a **preview of AI-assisted explanation selection**, not a trained phishing classifier or an accuracy improvement claim. Real Chrome on the development machine exposed the API but returned `unavailable`; inference quality and performance were not benchmarked here. The adapter and failure behavior are tested with a controlled API substitute. See [the model research and implementation decision](docs/LOCAL_AI_RESEARCH.md).
+
+### Protection boundaries
+
 Lynk cannot promise a website or transaction is safe. A clean URL can host a drainer, and a legitimate site can be compromised. Connecting a wallet, signing typed data, or granting token allowances needs review inside the wallet. Lynk **does not simulate transactions, inspect wallet-extension prompts, revoke approvals, or intercept wallet providers**. It never asks you to connect a wallet.
 
 Only reported-domain rules provide a network-level pre-load block. Heuristic navigation checks are asynchronous and may run after a request starts. In-page warnings and submit interception are best effort: hostile pages can hide fields, remove UI, make direct requests, or use closed shadow DOM. “No flags” means no known URL indicators were found, not a safety certification.
@@ -48,7 +60,7 @@ Threat intelligence is an **offline release snapshot**, not a live service. The 
 
 ## Privacy and permissions
 
-There is no backend, analytics, account, API key, remote script, or runtime reputation request. Production code fetches only its own packaged threat JSON. Source URLs in documentation/settings open only when clicked.
+There is no backend, analytics, account, API key, remote script, or runtime reputation request. Extension code fetches only its own packaged threat JSON. If you explicitly request local AI, Chrome may download its browser-managed model; inference stays on device. Source URLs in documentation/settings open only when clicked.
 
 | Permission              | Purpose                                                                                                                                                         |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -59,6 +71,8 @@ There is no backend, analytics, account, API key, remote script, or runtime repu
 | `alarms`                | Clean up expired temporary overrides.                                                                                                                           |
 
 Full current URLs are held transiently in **trusted extension session storage** to support warning details and continuation. They are cleared when tabs close or move to non-web pages and when the browser session ends. Persistent warning history contains **hostnames only**. Query strings and fragments are never persisted to disk by Lynk’s history feature. Disabling local history deletes it. Wallet accounts, balances, signatures, and field values are not collected. See [PRIVACY.md](PRIVACY.md).
+
+Explanation pages use random IDs, not checked URLs in query strings. Up to ten temporary explanation records contain hostnames and findings, with no URL path, query, or fragment; they expire after 15 minutes and are cleaned by the extension or at browser-session end.
 
 ## Warning overrides
 
